@@ -1,71 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- displays site properly based on user's device -->
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
 
-  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
-  
-  <title>Frontend Mentor | Weather app</title>
+    <title>My Practice Weather App</title>
 
-  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
-  <style>
-    .attribution { font-size: 11px; text-align: center; }
-    .attribution a { color: hsl(228, 45%, 44%); }
-  </style>
-</head>
-<body>
+    <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+    <style>
+      .attribution {
+        font-size: 11px;
+        text-align: center;
+      }
+      .attribution a {
+        color: hsl(228, 45%, 44%);
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <button type="button">
+        <img
+          src="./assets/images/icon-search.svg"
+          alt="This is the search bar"
+          width="40"
+        />
+        Search
+      </button>
+    </form>
+    <div>
+      Units Switch to Imperial/Metric Temperature Celsius (°C) Fahrenheit (°F)
+    </div>
 
-  <form>
-    <button type ="button">Search</button>
-  </form>
+    <div>
+      <h1>Wind Speed km/h mph</h1>
+    </div>
 
-  Units
+    <div>
+      <h1>Precipitation Millimeters (mm) Inches (in)</h1>
+    </div>
 
-  Switch to Imperial/Metric
+    <div>
+      <h1>How's the sky looking today?</h1>
+    </div>
 
-  Temperature
+    <div>
+      <h1>Search for a city, e.g., New York Search</h1>
+    </div>
+    <div>
+      Feels like
+    <!-- Insert temperature here -->
+    </div>
+    
+    <div> 
+      Humidity
+    <!-- Insert humidity here -->
+    </div>
+    
+    <div>
+      Wind
+    <!-- Insert wind here -->
+    </div>
+    
+    <div> Precipitation
+    <!-- Insert precipitation here -->
+    </div>
+   
 
-  Celsius (°C)
-  Fahrenheit (°F)
+    <div>
+      Daily forecast
+    <!-- Insert daily forecast for the next 7 days here -->
+    </div>
 
-  Wind Speed
+    <div>
+      Hourly forecast
+    <!-- Insert hourly forecast for the selected day here -->
+    </div>
 
-  km/h
-  mph
-
-  Precipitation
-
-  Millimeters (mm)
-  Inches (in)
-
-  How's the sky looking today?
-
-  Search for a city, e.g., New York
-  Search
-
-  Feels like
-  <!-- Insert temperature here -->
-
-  Humidity
-  <!-- Insert humidity here -->
-
-  Wind
-  <!-- Insert wind here -->   
-  
-  Precipitation
-  <!-- Insert precipitation here -->
-
-  Daily forecast
-  <!-- Insert daily forecast for the next 7 days here -->
-
-  Hourly forecast
-  <!-- Insert hourly forecast for the selected day here -->
-
-  <div class="attribution">
-    Challenge by <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>. 
-    Coded by <a href="#">Blake Horton</a>.
-  </div>
+    <div class="attribution">
+      Challenge by
+      <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>.
+      Coded by <a href="#">Blake Horton</a>.
+    </div>
     <script src="index.js"></script>
-</body>
+  </body>
 </html>
