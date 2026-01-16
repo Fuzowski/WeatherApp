@@ -13,17 +13,6 @@
     />
 
     <title>My Practice Weather App</title>
-
-    <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
-    <style>
-      .attribution {
-        font-size: 11px;
-        text-align: center;
-      }
-      .attribution a {
-        color: hsl(228, 45%, 44%);
-      }
-    </style>
   </head>
   <body>
     <form>
@@ -55,34 +44,49 @@
     <div>
       <h1>Search for a city, e.g., New York Search</h1>
     </div>
-    <div>
-      Feels like
-      <!-- Insert temperature here -->
-    </div>
+    <div class="flex">
+      <div class="w-60">
+        <div id="todayPreview">
+          <div id="mainWidget"></div>
+          <div class="flex">
+            <div>
+              Feels like
+              <!-- Insert temperature here -->
+            </div>
 
-    <div>
-      Humidity
-      <!-- Insert humidity here -->
-    </div>
+            <div>
+              Humidity
+              <!-- Insert humidity here -->
+            </div>
 
-    <div>
-      Wind
-      <!-- Insert wind here -->
-    </div>
+            <div>
+              Wind
+              <!-- Insert wind here -->
+            </div>
 
-    <div>
-      Precipitation
-      <!-- Insert precipitation here -->
-    </div>
+            <div>
+              Precipitation
+              <!-- Insert precipitation here -->
+            </div>
+          </div>
+        </div>
 
-    <div>
-      Daily forecast
-      <!-- Insert daily forecast for the next 7 days here -->
-    </div>
-
-    <div>
-      Hourly forecast
-      <!-- Insert hourly forecast for the selected day here -->
+        <div>
+          Daily forecast
+          <!-- Insert daily forecast for the next 7 days here -->
+          <div id="daylyForecast" class="flex">
+            <div>day 1</div>
+            <div>day 2</div>
+          </div>
+        </div>
+      </div>
+      <div class="w-40">
+        Hourly forecast
+        <!-- Insert hourly forecast for the selected day here -->
+        <div id="hourlyForecast">
+          
+        </div>
+      </div>
     </div>
 
     <div class="attribution">
