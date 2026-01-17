@@ -45,7 +45,30 @@ function renderHourItem(hourSlot) {
   return `
         <div class="hourItem flex">
             <div>${hourSlot.dt_txt}</div>
-            <div>${hourSlot.main.temp} F</div>
+            <div>${hourSlot.main.temp}</div>
         </div>
     `;
+}
+fetch(baseUrl)
+.then((res)=> res.json())
+.then((data)=> {
+  console.log(data);
+  renderDailyForecast(data.list.slice(0,8));
+});
+
+function renderDailyForecast(list) {
+  const dailyForecast = document.getElementById("dailyForecast");
+  for(let i = 0; i < list.length; i++) {
+    dailyForecast.innerHTML += renderDailyForecast(list[i]);
+  }
+}
+
+function createDailyForecastCard(daySlot) {
+  return `
+        <div calss= "dailyForecast flex">
+          <div>${daySlot.date}</div>
+          <div> Avg Temp: ${daySlot.main.temp}°F</div>
+        </div>
+
+  `;
 }
