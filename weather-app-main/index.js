@@ -32,6 +32,7 @@ fetch(baseUrl)
   .then((data) => {
     console.log(data);
     renderHourlyForecast(data.list.slice(0, 8));
+     renderDailyForecast(data.list.slice(0,8));
   });
 
 function renderHourlyForecast(list) {
@@ -42,33 +43,56 @@ function renderHourlyForecast(list) {
 }
 
 function renderHourItem(hourSlot) {
+  const splitDateTime = hourSlot.dt_txt.split ( " " )
+  const splitTime = splitDateTime[1].split(":")
+  let hour = splitTime[0]
+  if (hour > 12) {
+    hour -= 12 
+    hour += 'PM'
+  } else if (hour == 12) { 
+     hour += "PM"
+
+  } else if (hour == 0) {
+    hour = "12AM"
+    
+  } else {
+    hour += "AM"
+  }
+
+  
   return `
         <div class="hourItem flex">
-            <div>${hourSlot.dt_txt}</div>
+            <div>${hour}</div>
             <div>${hourSlot.main.temp}</div>
         </div>
     `;
 }
-fetch(baseUrl)
-.then((res)=> res.json())
-.then((data)=> {
-  console.log(data);
-  renderDailyForecast(data.list.slice(0,8));
-});
 
 function renderDailyForecast(list) {
   const dailyForecast = document.getElementById("dailyForecast");
+  dailyForecast.innerHTML = "";
+
   for(let i = 0; i < list.length; i++) {
-    dailyForecast.innerHTML += renderDailyForecast(list[i]);
+    dailyForecast.innerHTML += createDailyForecastCard(list[i]);
+
   }
 }
 
-function createDailyForecastCard(daySlot) {
+function createDailyForecastCard(daySlot) { 
+  const splitDateTime = daySlot.dt_txt.split ( " " )
+ 
   return `
-        <div calss= "dailyForecast flex">
-          <div>${daySlot.date}</div>
-          <div> Avg Temp: ${daySlot.main.temp}°F</div>
+        <div class= "dailyForecast">
+          <div>${splitDateTime[0]}</div>
+          <div class = "flex">
+          <div>${(daySlot.main.temp_min)}°F</div>
+          <div>${(daySlot.main.temp_max)}°F</div>
+          </div>
+          
         </div>
 
   `;
+
 }
+
+// try to find a way to convert date into weekday. this is homework.

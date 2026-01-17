@@ -18,9 +18,16 @@ body {
 #hourlyForecast{
      background-color: var(--Neutral-800);
      padding: 16px;
+     display: flex;
+     flex-direction: column;
+     gap: 15px;
+     
 }
 .hourItem{
     background-color: var(--Neutral-700);
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 5px;
 }
 .flex {
   display: flex;
@@ -33,6 +40,20 @@ body {
   width: 40%;
 }
 
-.w-50 {
-  width: 40%
+.dailyForecast {
+  background-color: var(--Neutral-800);
+  width: 150px;
+  height: 80px;
+  flex-direction: column;
+  justify-content: space-between;
+  display: flex;
+  padding: 10px;
+  .flex{
+    justify-content: space-between;
+  }
+}
+
+#dailyForecast {
+  gap: 15px;
+  flex-wrap: wrap;
 }
