@@ -79,11 +79,27 @@ function renderDailyForecast(list) {
 }
 
 function createDailyForecastCard(daySlot) { 
-  const splitDateTime = daySlot.dt_txt.split ( " " )
+  //1. this should get date-time string from the API
+  const dateTimeString = daySlot.dt_txt;
+
+  //2. this should convert the string into a date object
+  const dateObject = new Date(dateTimeString);
+
+
+  //3. this should get the weekday number (0-6)
+  const weekdayNumber = dateObject.getDay();
+
+  //4. lets create an array of weekday names
+  const weekdays = [
+    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+  ];
+
+  //5. Now lets use the weekday number to get the name
+  const weekdayName = weekdays[weekdayNumber];
  
   return `
         <div class= "dailyForecast">
-          <div>${splitDateTime[0]}</div>
+          <div>${weekdayName}</div>
           <div class = "flex">
           <div>${(daySlot.main.temp_min)}°F</div>
           <div>${(daySlot.main.temp_max)}°F</div>
