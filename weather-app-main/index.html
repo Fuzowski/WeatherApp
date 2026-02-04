@@ -11,67 +11,32 @@
       sizes="32x32"
       href="./assets/images/favicon-32x32.png"
     />
-
     <title>My Practice Weather App</title>
   </head>
   <body>
     <form class="flex">
-      <p ><input id="Search" type="search"></p>
+      <p><input id="Search" type="search" /></p>
       <button type="button" id="searchButton">
         <img
           src="./assets/images/icon-search.svg"
           alt="This is the search bar"
           width="40"
         />
-        
       </button>
     </form>
     <div>
       Units Switch to Imperial/Metric Temperature Celsius (°C) Fahrenheit (°F)
     </div>
-
-    <div>
-      <h1>Wind Speed km/h mph</h1>
-    </div>
-
-    <div>
-      <h1>Precipitation Millimeters (mm) Inches (in)</h1>
-    </div>
-
-    <div>
-      <h1>How's the sky looking today?</h1>
-    </div>
-
-    <div>
-      <h1></h1>
-    </div>
+    <div><h1>Wind Speed km/h mph</h1></div>
+    <div><h1>Precipitation Millimeters (mm) Inches (in)</h1></div>
+    <div><h1>How's the sky looking today?</h1></div>
+    <div><h1></h1></div>
     <div class="flex">
       <div class="w-60">
         <div id="todayPreview">
           <div id="mainWidget"></div>
-          <div class="flex">
-            <div>
-              Feels like
-              <!-- Insert temperature here -->
-            </div>
-
-            <div>
-              Humidity
-              <!-- Insert humidity here -->
-            </div>
-
-            <div>
-              Wind
-              <!-- Insert wind here -->
-            </div>
-
-            <div>
-              Precipitation
-              <!-- Insert precipitation here -->
-            </div>
-          </div>
+          <div class="flex" id="widget"></div>
         </div>
-
         <div>
           Daily forecast
           <!-- Insert daily forecast for the next 7 days here -->
@@ -84,7 +49,6 @@
         <div id="hourlyForecast"></div>
       </div>
     </div>
-
     <div class="attribution">
       Challenge by
       <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>.

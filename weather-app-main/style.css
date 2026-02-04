@@ -13,30 +13,16 @@
 
 body {
   background-color: var(--Neutral-900);
-  color:var(--Neutral-0)
+  color: var(--Neutral-0);
+  margin: 0;
 }
-#hourlyForecast{
-     background-color: var(--Neutral-800);
-     padding: 16px;
-     display: flex;
-     flex-direction: column;
-     gap: 15px;
-     overflow-x: auto;
-     
-}
-.hourItem{
-    background-color: var(--Neutral-700);
-    display: flex;
-    flex-direction: column;
-    align-items:center;
-    gap: 6px;
-    padding: 5%;
-    border-radius: 5px;
-    min-width: 100px;
-}
+
+
 .flex {
   display: flex;
+  gap: 15px;
 }
+
 
 .w-60 {
   width: 60%;
@@ -45,22 +31,107 @@ body {
   width: 40%;
 }
 
-.dailyForecast {
+
+#hourlyForecast {
   background-color: var(--Neutral-800);
-  width: 150px;
-  height: 80px;
-  flex-direction: column;
-  justify-content: space-between;
+  padding: 16px;
   display: flex;
-  padding: 10px;
-  align-items: center;
-  .flex{
-    justify-content: space-between;
-    width: 100%;
-  }
+  flex-direction: column; 
+  gap: 15px;
+
+  
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+
+
+.hourItem {
+  background-color: var(--Neutral-700);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+
+
+  padding: 12px;
+
+  border-radius: 5px;
+  width: 100%;
+}
+
+
+.hourItem .flex {
+  align-items: center;
+  gap: 10px; 
+}
+
 
 #dailyForecast {
   gap: 15px;
   flex-wrap: wrap;
+}
+
+
+.dailyForecast {
+  background-color: var(--Neutral-800);
+  width: 150px;
+  height: 80px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
+.dailyForecast .flex {
+  justify-content: space-between;
+  width: 100%;
+}
+
+
+#widget {
+  gap: 20px;
+  width: 100%;
+
+  
+  display: flex;
+}
+
+
+#widget > div {
+  background-color: var(--Neutral-800);
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  width: 100%;
+  border-radius: 5px;
+}
+
+
+form.flex {
+  align-items: center;
+  padding: 12px;
+}
+
+#Search {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--Neutral-600);
+  background-color: var(--Neutral-800);
+  color: var(--Neutral-0);
+}
+
+#searchButton {
+  border: none;
+  border-radius: 8px;
+  background-color: var(--Orange-500);
+  padding: 8px 10px;
+  cursor: pointer;
 }

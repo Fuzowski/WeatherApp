@@ -1,7 +1,7 @@
 function searchButton() {
   let value = document.getElementById("Search").value;
-  const API_KEY = "c13a15d0f9c61d66257040dc14e1bbc6";
 
+  const API_KEY = "c13a15d0f9c61d66257040dc14e1bbc6";
 const baseUrl = `https://api.openweathermap.org/data/2.5/forecast?
 q=${value}
 &
@@ -20,6 +20,8 @@ fetch(baseUrl)
 
     // daily forecast uses full list so we can extract unique days
     renderDailyForecast(data.list);
+   
+    renderTodaysWeather(data.list[0]);
   });
 }
 
@@ -46,6 +48,36 @@ function getWindSpeed(hourSlot) {
 //     document.body.className = 'light'
 // }
 // },2000)
+
+function renderMainWidget(hourSlot, cityName) {
+  const mainWidget = document.getElementById("mainWidget");
+
+  // Date + time from the forecast item
+  const dateObject = new Date (hourSlot.dt_txt);
+  const dayName = dateObject.toLocaleDateString("en-US", { weekday: "long" });
+
+  // Main Display values
+  const temp = Math.round(hourSlot.main.temp);
+  const description = hourSlot.weather[0].description;
+  const icon = hourSlot.weather[0].icon;
+
+  mainWidget.innerHTML = `
+  <div class="mainWidgetCard">
+      <div class="mainWidgetTop">
+        <div>
+          <div class="mainWidgetCity">${cityName}</div>
+          <div class="mainWidgetDay">${dayName}</div>
+        </div>
+        <img src="./assets/images/bg-today-large.svg" alt="${description}" />
+
+      </div>
+
+      <div class="mainWidgetTemp">${temp}°F</div>
+      <div class="mainWidgetDesc">${description}</div>
+    </div>
+  
+  `;
+}
 
 
 
@@ -74,20 +106,42 @@ function renderHourItem(hourSlot) {
     hour += "AM";
   }
 
+  
+
+  return `
+    <div class="hourItem flex">
+    <div class='flex'> <img src= "https://openweathermap.org/img/wn/${hourSlot.weather[0].icon}.png">
+      <div>${hour}</div> </div>
+      <div>${Math.round(hourSlot.main.temp)}°F</div>
+      </div>
+  `;
+} 
+
+function renderTodaysWeather(hourSlot) {
+
+  const Widget= document.getElementById("widget");
+ 
+  
+
   const feelsLike = getFeelsLike(hourSlot);
   const humidity = getHumidity(hourSlot);
   const wind = getWindSpeed(hourSlot);
 
-  return `
-    <div class="hourItem flex">
-      <div>${hour}</div>
-      <div>${Math.round(hourSlot.main.temp)}</div>
-      <div>Feels like : ${feelsLike}</div>
-      <div>Humidity: ${humidity}</div>
-      <div>Wind: ${wind}</div>
-    </div>
+  Widget.innerHTML= `
+      
+      <div> 
+      <div>Feels like</div : <div>${feelsLike}</div> 
+      </div>
+      <div>
+      <div> Humidity:</div> <div> ${humidity}</div> 
+      </div>
+      <div>
+      <div> Wind:</div> <div>${wind}</div> 
+      </div>
+      
   `;
-}
+} 
+
 
 function renderDailyForecast(list) {
   const dailyForecast = document.getElementById("dailyForecast");
@@ -119,24 +173,14 @@ function renderDailyForecast(list) {
 }
 
 function createDailyForecastCard(daySlot) { 
-  //2. this should convert the string into a date object
+ 
   const dateObject = new Date(daySlot.dt_txt);
 
   let language=(dateObject.toLocaleDateString("us-US", {
     weekday:"short"
   })) 
 
-  //3. this should get the weekday number (0-6)
- // const weekdayNumber = dateObject.getDay();
 
-  //4. lets create an array of weekday names
-  /* const weekdays = [
-    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-  ];
-
-  //5. Now lets use the weekday number to get the name
-  const weekdayName = weekdays[weekdayNumber];
-*/
   return `
     <div class="dailyForecast">
       <div>${language}</div>
@@ -149,4 +193,4 @@ function createDailyForecastCard(daySlot) {
   `;
 }
 
-// new homework. create functions for feels like, humidity and wind if have time work on fixing css
+// new homework. create Giant widget and make a new function dont defne exsisting functions
