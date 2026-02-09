@@ -1,5 +1,19 @@
 const select = document.getElementById("selection");
+// Api key stays global so that all functions can use it.
 const API_KEY = "c13a15d0f9c61d66257040dc14e1bbc6";
+
+// helper returns temperature unit symbol based on dtopdown value
+function getTempUnitSymbol() {
+  if (select.value === "imperial") return "°F";
+  if (select.value === "metric") return "°C";
+  return "K"; //standard
+}
+
+function getWindUnitLabel() {
+  if (select.value === "imperial") return " mph";
+  return "m/s";
+}
+
 function searchButton() {
   let value = document.getElementById("Search").value;
 
@@ -10,11 +24,10 @@ units=${select.value}
 &
 appid=${API_KEY}
 `;
-  getApiHandler(baseUrl);
+  getApiHandler(baseUrl, value);
 }
 
-function getApiHandler(baseUrl) {
-  
+function getApiHandler(baseUrl, cityName) {
   fetch(baseUrl)
     .then((res) => res.json())
     .then((data) => {
@@ -25,14 +38,16 @@ function getApiHandler(baseUrl) {
 
       // daily forecast uses full list so we can extract unique days
       renderDailyForecast(data.list);
-
+      // today stats widget (feels like, humidity, wind)
       renderTodaysWeather(data.list[0]);
-
-      renderMainWidget(data.list[0], value);
+      // main widget (big temp / city / date)
+      renderMainWidget(data.list[0], data.city.name, data.city.country);
+      //
+      renderWeekdayList(data.list);
     });
 }
-
-
+/* Re-fetches with new units whenever dropdown changes
+    Uses current Search input value (so the same city updates instantly) */
 select.addEventListener("change", (event) => {
   let value = document.getElementById("Search").value;
 
@@ -43,7 +58,7 @@ units=${event.target.value}
 &
 appid=${API_KEY}
 `;
-  getApiHandler(baseUrl);
+  getApiHandler(baseUrl, value);
 });
 
 const btn = document.getElementById("searchButton");
@@ -60,16 +75,25 @@ function getHumidity(hourSlot) {
 function getWindSpeed(hourSlot) {
   return Math.round(hourSlot.wind.speed) + "mph";
 }
-// setInterval(()=>{
-// let classN = document.body.className;
-// if(classN==='light'){
-//     document.body.className = 'dark'
-// }else{
-//     document.body.className = 'light'
-// }
-// },2000)
 
-function renderMainWidget(hourSlot, cityName) {
+function getPrecip(hourSlot) {
+  // Rain or snow volume over the last 3 hours
+  const rainMm = hourSlot.rain?.["3h"] ?? 0;
+  const snowMm = hourSlot.snow?.["3h"] ?? 0;
+
+  const totalMm = rainMm + snowMm;
+
+  // Imperial shows inches, mertic/standard shows mm
+
+  if (select.value === "imperial") {
+    return (totalMm / 25.4).toFixed(2) + " in";
+  }
+
+  return totalMm.toFixed(1) + " mm";
+}
+
+
+function renderMainWidget(hourSlot, cityName, countryCode) {
   const mainWidget = document.getElementById("mainWidget");
 
   // Date + time from the forecast item
@@ -90,20 +114,22 @@ function renderMainWidget(hourSlot, cityName) {
   <div class="mainWidgetCard flex">
       <div class="mainWidgetTop">
         
-          <div class="mainWidgetCity">${cityName}</div>
+          <div class="mainWidgetCity">${cityName}, ${countryCode}</div>
           <div class="mainWidgetDay">${dayName}</div>
         </div>
 
       <div class="flex"> 
       
-      <div class="mainWidgetDesc"><img src= "https://openweathermap.org/img/wn/${icon}.png"></div> 
-      <div class="mainWidgetTemp">${temp}°F</div>
+        <img class="mainWidgetIcon" src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${description}">
+ 
+      <div class="mainWidgetTemp">${temp}${getTempUnitSymbol()}</div>
       </div>
     </div>
   
   `;
 }
 
+// hourly forecast
 function renderHourlyForecast(list) {
   const hourlyForecast = document.getElementById("hourlyForecast");
   hourlyForecast.innerHTML = "";
@@ -114,9 +140,10 @@ function renderHourlyForecast(list) {
 }
 
 function renderHourItem(hourSlot) {
-  const splitDateTime = hourSlot.dt_txt.split(" ");
-  const splitTime = splitDateTime[1].split(":");
-  let hour = splitTime[0];
+  const date = new Date (hourSlot.dt * 1000)
+  //const splitDateTime = hourSlot.dt_txt.split(" ");
+  //const splitTime = splitDateTime[1].split(":");
+  let hour = date.getHours() //splitTime[0];
 
   if (hour > 12) {
     hour -= 12;
@@ -133,7 +160,7 @@ function renderHourItem(hourSlot) {
     <div class="hourItem flex">
     <div class='flex'> <img src= "https://openweathermap.org/img/wn/${hourSlot.weather[0].icon}.png">
       <div>${hour}</div> </div>
-      <div>${Math.round(hourSlot.main.temp)}°F</div>
+      <div>${Math.round(hourSlot.main.temp)}${getTempUnitSymbol()}</div>
       </div>
   `;
 }
@@ -148,18 +175,41 @@ function renderTodaysWeather(hourSlot) {
   Widget.innerHTML = `
       
       <div> 
-      <div>Feels like</div : <div>${feelsLike}</div> 
+      
+      <div>Feels like</div : 
+      
+      <div>${feelsLike}</div> 
+      
       </div>
+     
       <div>
-      <div> Humidity:</div> <div> ${humidity}</div> 
+      
+      <div> Humidity:</div> 
+      
+      <div> ${humidity}</div> 
+      
       </div>
+      
       <div>
-      <div> Wind:</div> <div>${wind}</div> 
+      
+      <div> Wind:</div> 
+      
+      <div>${wind}</div> 
+      
       </div>
+      
+      <div>
+      
+      <div>Precipitation</div>
+      
+      <div>${getPrecip(hourSlot)}</div>
+      
+      </div>
+
       
   `;
 }
-
+// daily forecast
 function renderDailyForecast(list) {
   const dailyForecast = document.getElementById("dailyForecast");
   dailyForecast.innerHTML = "";
@@ -201,11 +251,36 @@ function createDailyForecastCard(daySlot) {
       <div>${language}</div>
       <img src= "https://openweathermap.org/img/wn/${daySlot.weather[0].icon}.png">
       <div class="flex">
-        <div>${daySlot.main.temp_min}°F</div>
-        <div>${daySlot.main.temp_max}°F</div>
+        <div>${daySlot.main.temp_min}${getTempUnitSymbol()}</div>
+        <div>${daySlot.main.temp_max}${getTempUnitSymbol()}</div>
       </div>
     </div>
   `;
 }
 
-// new homework. figure out how to fix units.change units from F c or K depending on which metric unit is selected.
+function renderWeekdayList(list) {
+  const renderedDays = new Set(); // this will track weekdays already rendered
+  const selectWeekday = document.getElementById ("selectWday");
+  
+
+  for (let i = 0; i < list.length; i++) {
+    const daySlot = list[i];
+
+    // convert date-time string into Date object
+    const dateObject = new Date(daySlot.dt *1000);
+
+    // get weekday number (0–6)
+    const weekday = dateObject.toLocaleDateString("us-US",{
+      weekday: "long"
+    });
+    console.log(weekday)
+    
+    // only render the day if it hasn't been shown yet
+    if (!renderedDays.has(weekday)) {
+      renderedDays.add(weekday); 
+      selectWeekday.innerHTML += `<option>${weekday}</option>`;
+    }
+  }
+  
+}
+// homework: find out how to group by weekday break 40 slots into sub groups. need to find out how to group forecast by weekday.

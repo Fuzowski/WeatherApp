@@ -18,11 +18,11 @@
       <select id="selection">
         <option>select units</option>
 
-        <option value="metric">Metric</option>
+        <option value="metric">C (Metric)</option>
 
-        <option value="imperial">Imperial</option>
+        <option value="imperial">F (Imperial)</option>
 
-        <option value="standard">Standard</option>
+        <option value="standard">K (Standard)</option>
       </select>
     </div>
     <div><h1>How's the sky looking today?</h1></div>
@@ -50,9 +50,11 @@
         </div>
       </div>
       <div class="w-40">
-        Hourly forecast
-
-        <!-- Insert hourly forecast for the selected day here -->
+        <div class="hourlyPanel">
+          <div class="hourlyHeader">Hourly forecast</div> 
+          <div class="toggleCog"><select id="selectWday"></select></div>
+          <div id="hourlyForecast"></div>
+        </div>
         <div id="hourlyForecast"></div>
       </div>
     </div>
