@@ -135,3 +135,34 @@ form.flex {
   padding: 8px 10px;
   cursor: pointer;
 }
+
+#mainWidget {
+  background-image: url("./assets/images/bg-today-large.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 200px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.todayBg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mainWidgetCard {
+  justify-content: space-between;
+  width: 100%;
+}
+
+.mainWidgetTemp {
+  font-size: 50px;
+  font-style: italic;
+}
+
+.mainWidgetTop {
+  
+}

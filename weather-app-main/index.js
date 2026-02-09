@@ -1,29 +1,50 @@
+const select = document.getElementById("selection");
+const API_KEY = "c13a15d0f9c61d66257040dc14e1bbc6";
 function searchButton() {
   let value = document.getElementById("Search").value;
 
-  const API_KEY = "c13a15d0f9c61d66257040dc14e1bbc6";
-const baseUrl = `https://api.openweathermap.org/data/2.5/forecast?
+  const baseUrl = `https://api.openweathermap.org/data/2.5/forecast?
 q=${value}
 &
-units=imperial
+units=${select.value}
 &
 appid=${API_KEY}
 `;
-
-fetch(baseUrl)
-  .then((res) => res.json())
-  .then((data) => {
-    console.log(data);
-
-    // hourly forecast shows first 24 hours (8 x 3-hour blocks)
-    renderHourlyForecast(data.list.slice(0, 7));
-
-    // daily forecast uses full list so we can extract unique days
-    renderDailyForecast(data.list);
-   
-    renderTodaysWeather(data.list[0]);
-  });
+  getApiHandler(baseUrl);
 }
+
+function getApiHandler(baseUrl) {
+  
+  fetch(baseUrl)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+
+      // hourly forecast shows first 24 hours (8 x 3-hour blocks)
+      renderHourlyForecast(data.list.slice(0, 7));
+
+      // daily forecast uses full list so we can extract unique days
+      renderDailyForecast(data.list);
+
+      renderTodaysWeather(data.list[0]);
+
+      renderMainWidget(data.list[0], value);
+    });
+}
+
+
+select.addEventListener("change", (event) => {
+  let value = document.getElementById("Search").value;
+
+  const baseUrl = `https://api.openweathermap.org/data/2.5/forecast?
+q=${value}
+&
+units=${event.target.value}
+&
+appid=${API_KEY}
+`;
+  getApiHandler(baseUrl);
+});
 
 const btn = document.getElementById("searchButton");
 btn.addEventListener("click", searchButton);
@@ -35,7 +56,6 @@ function getFeelsLike(hourSlot) {
 function getHumidity(hourSlot) {
   return hourSlot.main.humidity + "%";
 }
-
 
 function getWindSpeed(hourSlot) {
   return Math.round(hourSlot.wind.speed) + "mph";
@@ -53,8 +73,13 @@ function renderMainWidget(hourSlot, cityName) {
   const mainWidget = document.getElementById("mainWidget");
 
   // Date + time from the forecast item
-  const dateObject = new Date (hourSlot.dt_txt);
-  const dayName = dateObject.toLocaleDateString("en-US", { weekday: "long" });
+  const dateObject = new Date(hourSlot.dt_txt);
+  const dayName = dateObject.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 
   // Main Display values
   const temp = Math.round(hourSlot.main.temp);
@@ -62,24 +87,22 @@ function renderMainWidget(hourSlot, cityName) {
   const icon = hourSlot.weather[0].icon;
 
   mainWidget.innerHTML = `
-  <div class="mainWidgetCard">
+  <div class="mainWidgetCard flex">
       <div class="mainWidgetTop">
-        <div>
+        
           <div class="mainWidgetCity">${cityName}</div>
           <div class="mainWidgetDay">${dayName}</div>
         </div>
-        <img src="./assets/images/bg-today-large.svg" alt="${description}" />
 
-      </div>
-
+      <div class="flex"> 
+      
+      <div class="mainWidgetDesc"><img src= "https://openweathermap.org/img/wn/${icon}.png"></div> 
       <div class="mainWidgetTemp">${temp}°F</div>
-      <div class="mainWidgetDesc">${description}</div>
+      </div>
     </div>
   
   `;
 }
-
-
 
 function renderHourlyForecast(list) {
   const hourlyForecast = document.getElementById("hourlyForecast");
@@ -106,8 +129,6 @@ function renderHourItem(hourSlot) {
     hour += "AM";
   }
 
-  
-
   return `
     <div class="hourItem flex">
     <div class='flex'> <img src= "https://openweathermap.org/img/wn/${hourSlot.weather[0].icon}.png">
@@ -115,19 +136,16 @@ function renderHourItem(hourSlot) {
       <div>${Math.round(hourSlot.main.temp)}°F</div>
       </div>
   `;
-} 
+}
 
 function renderTodaysWeather(hourSlot) {
-
-  const Widget= document.getElementById("widget");
- 
-  
+  const Widget = document.getElementById("widget");
 
   const feelsLike = getFeelsLike(hourSlot);
   const humidity = getHumidity(hourSlot);
   const wind = getWindSpeed(hourSlot);
 
-  Widget.innerHTML= `
+  Widget.innerHTML = `
       
       <div> 
       <div>Feels like</div : <div>${feelsLike}</div> 
@@ -140,8 +158,7 @@ function renderTodaysWeather(hourSlot) {
       </div>
       
   `;
-} 
-
+}
 
 function renderDailyForecast(list) {
   const dailyForecast = document.getElementById("dailyForecast");
@@ -172,14 +189,12 @@ function renderDailyForecast(list) {
   }
 }
 
-function createDailyForecastCard(daySlot) { 
- 
+function createDailyForecastCard(daySlot) {
   const dateObject = new Date(daySlot.dt_txt);
 
-  let language=(dateObject.toLocaleDateString("us-US", {
-    weekday:"short"
-  })) 
-
+  let language = dateObject.toLocaleDateString("us-US", {
+    weekday: "short",
+  });
 
   return `
     <div class="dailyForecast">
@@ -193,4 +208,4 @@ function createDailyForecastCard(daySlot) {
   `;
 }
 
-// new homework. create Giant widget and make a new function dont defne exsisting functions
+// new homework. figure out how to fix units.change units from F c or K depending on which metric unit is selected.

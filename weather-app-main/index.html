@@ -14,6 +14,18 @@
     <title>My Practice Weather App</title>
   </head>
   <body>
+    <div>
+      <select id="selection">
+        <option>select units</option>
+
+        <option value="metric">Metric</option>
+
+        <option value="imperial">Imperial</option>
+
+        <option value="standard">Standard</option>
+      </select>
+    </div>
+    <div><h1>How's the sky looking today?</h1></div>
     <form class="flex">
       <p><input id="Search" type="search" /></p>
       <button type="button" id="searchButton">
@@ -24,13 +36,7 @@
         />
       </button>
     </form>
-    <div>
-      Units Switch to Imperial/Metric Temperature Celsius (°C) Fahrenheit (°F)
-    </div>
-    <div><h1>Wind Speed km/h mph</h1></div>
-    <div><h1>Precipitation Millimeters (mm) Inches (in)</h1></div>
-    <div><h1>How's the sky looking today?</h1></div>
-    <div><h1></h1></div>
+
     <div class="flex">
       <div class="w-60">
         <div id="todayPreview">
@@ -45,6 +51,7 @@
       </div>
       <div class="w-40">
         Hourly forecast
+
         <!-- Insert hourly forecast for the selected day here -->
         <div id="hourlyForecast"></div>
       </div>
