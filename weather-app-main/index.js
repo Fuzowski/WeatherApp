@@ -1,29 +1,49 @@
 const select = document.getElementById("selection");
-// Api key stays global so that all functions can use it.
+ const selectWeekday =
+    document.getElementById("selectWday");
+    
+// API key stays global
 const API_KEY = "c13a15d0f9c61d66257040dc14e1bbc6";
 
-// helper returns temperature unit symbol based on dtopdown value
+
+function groupedByWeekday(list) {
+return Object.groupBy(
+    list,
+    (slot) => {
+      const dateObject = new Date(slot.dt * 1000);
+
+      return dateObject.toLocaleDateString("en-US", {
+        weekday: "long",
+      });
+    }
+  );
+}
+
+/* ===============================
+   UNIT HELPERS
+================================ */
+
 function getTempUnitSymbol() {
   if (select.value === "imperial") return "°F";
   if (select.value === "metric") return "°C";
-  return "K"; //standard
+  return "K";
 }
 
 function getWindUnitLabel() {
   if (select.value === "imperial") return " mph";
-  return "m/s";
+  return " m/s";
 }
+
+
+/* ===============================
+   SEARCH + API HANDLER
+================================ */
 
 function searchButton() {
   let value = document.getElementById("Search").value;
 
-  const baseUrl = `https://api.openweathermap.org/data/2.5/forecast?
-q=${value}
-&
-units=${select.value}
-&
-appid=${API_KEY}
-`;
+  const baseUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${value}&units=${select.value}&appid=${API_KEY}`;
+
   getApiHandler(baseUrl, value);
 }
 
@@ -31,41 +51,70 @@ function getApiHandler(baseUrl, cityName) {
   fetch(baseUrl)
     .then((res) => res.json())
     .then((data) => {
-      console.log(data);
+      
+      let group = groupedByWeekday(data.list) 
+      renderHourlyForecast(Object.values(group)[0])
+      selectWeekday.addEventListener("change",(event)=>{
+       const selectedDay = event.target.value 
+       const slotsPerDay = group[selectedDay]
+        console.log("change", selectedDay, slotsPerDay) 
+        renderHourlyForecast(slotsPerDay)
+        
+              // HW: read only list for specific day on another line 
+        //invoke renderHOurlyforecast witha the proper list
+      });
 
-      // hourly forecast shows first 24 hours (8 x 3-hour blocks)
-      renderHourlyForecast(data.list.slice(0, 7));
 
-      // daily forecast uses full list so we can extract unique days
-      renderDailyForecast(data.list);
-      // today stats widget (feels like, humidity, wind)
+    /* HW Practice Object: an object is a collection of related properties and or methods.
+  Can reresent real world objects ex: people, products, places (objects cant have same name)
+  Object = {key:value,
+  function()}
+
+  const Blake = {
+  firstname: "Everett", 
+  lastname: "Horton",
+  age: 30,
+  isEmployed: false,
+  sayHello: () => {console.log("Hello how are you?")}, this will be a functioin expression
+    [] these are used for multi word properties EX "likes pizza": true
+     multiword property names must be quoted
+  Blake.sayHello
+  
+  if you need one of these properties take the object we are refering to
+  console.log(Blake.firstmame); in the terminal this would read "Everett"
+  using the. method can only give single strings with no spaces. can use [] instrad
+  }*/
+
+      renderDailyForecast(group);
       renderTodaysWeather(data.list[0]);
-      // main widget (big temp / city / date)
-      renderMainWidget(data.list[0], data.city.name, data.city.country);
-      //
-      renderWeekdayList(data.list);
+      renderMainWidget(
+        data.list[0],
+        data.city.name,
+        data.city.country
+      );
+      renderWeekdayList(Object.keys(group));
     });
 }
-/* Re-fetches with new units whenever dropdown changes
-    Uses current Search input value (so the same city updates instantly) */
+
 select.addEventListener("change", (event) => {
   let value = document.getElementById("Search").value;
 
-  const baseUrl = `https://api.openweathermap.org/data/2.5/forecast?
-q=${value}
-&
-units=${event.target.value}
-&
-appid=${API_KEY}
-`;
+  const baseUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${value}&units=${event.target.value}&appid=${API_KEY}`;
+
   getApiHandler(baseUrl, value);
 });
 
-const btn = document.getElementById("searchButton");
-btn.addEventListener("click", searchButton);
+document
+  .getElementById("searchButton")
+  .addEventListener("click", searchButton);
+
+
+/* ===============================
+   DATA HELPERS
+================================ */
 
 function getFeelsLike(hourSlot) {
-  return Math.round(hourSlot.main.feels_like) + "°F";
+  return Math.round(hourSlot.main.feels_like) + getTempUnitSymbol();
 }
 
 function getHumidity(hourSlot) {
@@ -73,17 +122,16 @@ function getHumidity(hourSlot) {
 }
 
 function getWindSpeed(hourSlot) {
-  return Math.round(hourSlot.wind.speed) + "mph";
+  return (
+    Math.round(hourSlot.wind.speed) + getWindUnitLabel()
+  );
 }
 
 function getPrecip(hourSlot) {
-  // Rain or snow volume over the last 3 hours
   const rainMm = hourSlot.rain?.["3h"] ?? 0;
   const snowMm = hourSlot.snow?.["3h"] ?? 0;
 
   const totalMm = rainMm + snowMm;
-
-  // Imperial shows inches, mertic/standard shows mm
 
   if (select.value === "imperial") {
     return (totalMm / 25.4).toFixed(2) + " in";
@@ -93,11 +141,15 @@ function getPrecip(hourSlot) {
 }
 
 
+/* ===============================
+   MAIN WIDGET
+================================ */
+
 function renderMainWidget(hourSlot, cityName, countryCode) {
   const mainWidget = document.getElementById("mainWidget");
 
-  // Date + time from the forecast item
-  const dateObject = new Date(hourSlot.dt_txt);
+  const dateObject = new Date(hourSlot.dt * 1000);
+
   const dayName = dateObject.toLocaleDateString("en-US", {
     weekday: "long",
     month: "short",
@@ -105,33 +157,36 @@ function renderMainWidget(hourSlot, cityName, countryCode) {
     year: "numeric",
   });
 
-  // Main Display values
   const temp = Math.round(hourSlot.main.temp);
   const description = hourSlot.weather[0].description;
   const icon = hourSlot.weather[0].icon;
 
   mainWidget.innerHTML = `
-  <div class="mainWidgetCard flex">
+    <div class="mainWidgetCard flex">
       <div class="mainWidgetTop">
-        
-          <div class="mainWidgetCity">${cityName}, ${countryCode}</div>
-          <div class="mainWidgetDay">${dayName}</div>
-        </div>
+        <div class="mainWidgetCity">${cityName}, ${countryCode}</div>
+        <div class="mainWidgetDay">${dayName}</div>
+      </div>
 
-      <div class="flex"> 
-      
-        <img class="mainWidgetIcon" src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${description}">
- 
-      <div class="mainWidgetTemp">${temp}${getTempUnitSymbol()}</div>
+      <div class="flex">
+        <img class="mainWidgetIcon"
+          src="https://openweathermap.org/img/wn/${icon}@2x.png"
+          alt="${description}">
+        <div class="mainWidgetTemp">${temp}${getTempUnitSymbol()}</div>
       </div>
     </div>
-  
   `;
 }
 
-// hourly forecast
+
+/* ===============================
+   HOURLY FORECAST
+================================ */
+
 function renderHourlyForecast(list) {
-  const hourlyForecast = document.getElementById("hourlyForecast");
+  const hourlyForecast =
+    document.getElementById("hourlyForecast");
+
   hourlyForecast.innerHTML = "";
 
   for (let i = 0; i < list.length; i++) {
@@ -140,17 +195,15 @@ function renderHourlyForecast(list) {
 }
 
 function renderHourItem(hourSlot) {
-  const date = new Date (hourSlot.dt * 1000)
-  //const splitDateTime = hourSlot.dt_txt.split(" ");
-  //const splitTime = splitDateTime[1].split(":");
-  let hour = date.getHours() //splitTime[0];
+  const date = new Date(hourSlot.dt * 1000);
+  let hour = date.getHours();
 
   if (hour > 12) {
     hour -= 12;
     hour += "PM";
-  } else if (hour == 12) {
+  } else if (hour === 12) {
     hour += "PM";
-  } else if (hour == 0) {
+  } else if (hour === 0) {
     hour = "12AM";
   } else {
     hour += "AM";
@@ -158,129 +211,146 @@ function renderHourItem(hourSlot) {
 
   return `
     <div class="hourItem flex">
-    <div class='flex'> <img src= "https://openweathermap.org/img/wn/${hourSlot.weather[0].icon}.png">
-      <div>${hour}</div> </div>
-      <div>${Math.round(hourSlot.main.temp)}${getTempUnitSymbol()}</div>
+      <div class="flex">
+        <img src="https://openweathermap.org/img/wn/${hourSlot.weather[0].icon}.png">
+        <div>${hour}</div>
       </div>
+      <div>${Math.round(hourSlot.main.temp)}${getTempUnitSymbol()}</div>
+    </div>
   `;
 }
+
+
+/* ===============================
+   TODAY STATS WIDGET
+================================ */
 
 function renderTodaysWeather(hourSlot) {
   const Widget = document.getElementById("widget");
 
-  const feelsLike = getFeelsLike(hourSlot);
-  const humidity = getHumidity(hourSlot);
-  const wind = getWindSpeed(hourSlot);
-
   Widget.innerHTML = `
-      
-      <div> 
-      
-      <div>Feels like</div : 
-      
-      <div>${feelsLike}</div> 
-      
-      </div>
-     
-      <div>
-      
-      <div> Humidity:</div> 
-      
-      <div> ${humidity}</div> 
-      
-      </div>
-      
-      <div>
-      
-      <div> Wind:</div> 
-      
-      <div>${wind}</div> 
-      
-      </div>
-      
-      <div>
-      
-      <div>Precipitation</div>
-      
-      <div>${getPrecip(hourSlot)}</div>
-      
-      </div>
+    <div>
+      <div>Feels like</div>
+      <div>${getFeelsLike(hourSlot)}</div>
+    </div>
 
-      
+    <div>
+      <div>Humidity</div>
+      <div>${getHumidity(hourSlot)}</div>
+    </div>
+
+    <div>
+      <div>Wind</div>
+      <div>${getWindSpeed(hourSlot)}</div>
+    </div>
+
+    <div>
+      <div>Precipitation</div>
+      <div>${getPrecip(hourSlot)}</div>
+    </div>
   `;
 }
-// daily forecast
-function renderDailyForecast(list) {
-  const dailyForecast = document.getElementById("dailyForecast");
+
+
+/* ===============================
+   DAILY FORECAST (GROUPED)
+================================ */
+
+function renderDailyForecast(groupedByWeekday) {
+  const dailyForecast =
+    document.getElementById("dailyForecast");
+
   dailyForecast.innerHTML = "";
 
-  const renderedDays = new Set(); // this will track weekdays already rendered
+  // GROUP ALL 40 SLOTS BY WEEKDAY
+   
+
+  console.log("groupedByWeekday:", groupedByWeekday);
+
+  const weekdayEntries =
+    Object.entries(groupedByWeekday);
+
   const MAX_DAYS = 7;
 
-  for (let i = 0; i < list.length; i++) {
-    const daySlot = list[i];
+  for (
+    let i = 0;
+    i < weekdayEntries.length && i < MAX_DAYS;
+    i++
+  ) {
+    const [weekdayName, dayGroup] =
+      weekdayEntries[i];
 
-    // convert date-time string into Date object
-    const dateObject = new Date(daySlot.dt_txt);
+    const middayIndex = 4;
+    const safeIndex =
+      dayGroup[middayIndex]
+        ? middayIndex
+        : Math.floor(dayGroup.length / 2);
 
-    // get weekday number (0–6)
-    const weekdayNumber = dateObject.getDay();
+    const repSlot = dayGroup[safeIndex];
 
-    // stop once max number of days is reached
-    if (renderedDays.size === MAX_DAYS) {
-      break;
-    }
+    // compute real daily min/max
+    const temps = dayGroup.map(
+      (slot) => slot.main.temp
+    );
 
-    // only render the day if it hasn't been shown yet
-    if (!renderedDays.has(weekdayNumber)) {
-      renderedDays.add(weekdayNumber);
-      dailyForecast.innerHTML += createDailyForecastCard(daySlot);
-    }
+    repSlot.main.temp_min = Math.min(...temps);
+    repSlot.main.temp_max = Math.max(...temps);
+
+    dailyForecast.innerHTML +=
+      createDailyForecastCard(repSlot);
   }
 }
 
-function createDailyForecastCard(daySlot) {
-  const dateObject = new Date(daySlot.dt_txt);
 
-  let language = dateObject.toLocaleDateString("us-US", {
-    weekday: "short",
-  });
+/* ===============================
+   DAILY CARD TEMPLATE
+================================ */
+
+function createDailyForecastCard(daySlot) {
+  const dateObject = new Date(daySlot.dt * 1000);
+
+  const language =
+    dateObject.toLocaleDateString("en-US", {
+      weekday: "short",
+    });
 
   return `
     <div class="dailyForecast">
       <div>${language}</div>
-      <img src= "https://openweathermap.org/img/wn/${daySlot.weather[0].icon}.png">
+      <img src="https://openweathermap.org/img/wn/${daySlot.weather[0].icon}.png">
       <div class="flex">
-        <div>${daySlot.main.temp_min}${getTempUnitSymbol()}</div>
-        <div>${daySlot.main.temp_max}${getTempUnitSymbol()}</div>
+        <div>${Math.round(daySlot.main.temp_min)}${getTempUnitSymbol()}</div>
+        <div>${Math.round(daySlot.main.temp_max)}${getTempUnitSymbol()}</div>
       </div>
     </div>
   `;
 }
 
-function renderWeekdayList(list) {
-  const renderedDays = new Set(); // this will track weekdays already rendered
-  const selectWeekday = document.getElementById ("selectWday");
-  
 
-  for (let i = 0; i < list.length; i++) {
-    const daySlot = list[i];
+/* ===============================
+   WEEKDAY DROPDOWN
+================================ */
 
-    // convert date-time string into Date object
-    const dateObject = new Date(daySlot.dt *1000);
+function renderWeekdayList(weekdays) {
+ 
+ 
 
-    // get weekday number (0–6)
-    const weekday = dateObject.toLocaleDateString("us-US",{
-      weekday: "long"
-    });
-    console.log(weekday)
+  selectWeekday.innerHTML = "";
+
+  for (let i = 0; i < weekdays.length; i++) {
+   
+
+    const weekday = weekdays[i] 
+      
+      
+
     
-    // only render the day if it hasn't been shown yet
-    if (!renderedDays.has(weekday)) {
-      renderedDays.add(weekday); 
-      selectWeekday.innerHTML += `<option>${weekday}</option>`;
-    }
-  }
+      selectWeekday.innerHTML +=
+        `<option value= "${weekday}">${weekday}</option>`;
+         
+ 
+    
+  }}
+
+
   
-}
-// homework: find out how to group by weekday break 40 slots into sub groups. need to find out how to group forecast by weekday.

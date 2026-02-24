@@ -1,4 +1,10 @@
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
 :root {
+ 
   --Neutral-900: hsl(243, 96%, 9%);
   --Neutral-800: hsl(243, 27%, 20%);
   --Neutral-700: hsl(243, 23%, 24%);
@@ -15,6 +21,7 @@ body {
   background-color: var(--Neutral-900);
   color: var(--Neutral-0);
   margin: 0;
+  font-family: "Bricolage Grotesque", sans-serif;
 }
 
 
@@ -28,7 +35,9 @@ body {
   width: 60%;
 }
 .w-40 {
-  width: 40%;
+  width: 25%;
+  padding-right: 20px;
+  
 }
 
 
@@ -40,7 +49,7 @@ body {
   gap: 15px;
 
   
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
   max-height: 520px;
 }
@@ -54,7 +63,7 @@ body {
   gap: 6px;
 
 
-  padding: 12px;
+  padding-right: 12px;
 
   border-radius: 5px;
   width: 100%;
@@ -64,6 +73,7 @@ body {
 .hourItem .flex {
   align-items: center;
   gap: 10px; 
+  
 }
 
 
@@ -75,7 +85,7 @@ body {
 
 .dailyForecast {
   background-color: var(--Neutral-800);
-  width: 150px;
+  width: 80px;
   height: 80px;
 
   display: flex;
@@ -85,7 +95,8 @@ body {
 
   padding: 10px;
   border-radius: 5px;
-  font-size: 13px;
+  font-size: 13px ;
+  
 }
 
 
@@ -99,10 +110,10 @@ body {
 
 #widget {
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
+  display: flex;
+ 
   gap: 20px;
-  max-width: 500px;
+  
 }
 
 
@@ -112,15 +123,16 @@ body {
 
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 5px;
 
+  /* flex:1 0 25%; */
   width: 100%;
   border-radius: 5px;
 
-  min-height: 90px;
+  
   justify-content: center;
-  align-items: center;
-  text-align: center;
+  
+  
 
 }
 
@@ -152,7 +164,7 @@ form.flex {
   background-size: cover;
   background-position: center;
   height: 200px;
-  margin-bottom: 20px;
+  
   
   display: flex;
   align-items: center;
@@ -216,10 +228,10 @@ form.flex {
   height: 60px
 }
 
-#widget > div {
+/* #widget > div {
   gap: 6px;            
   padding: 16px;
-}
+} */
 
 #widget > div div:first-child {
   font-size: 13px;     
@@ -234,7 +246,8 @@ form.flex {
 .hourlyPanel {
   background-color: var(--Neutral-800);
   border-radius: 10px;
-  padding: 12px;
+  padding: 20px;
+  
 }
 
 .hourlyHeader  {
